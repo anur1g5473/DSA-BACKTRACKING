@@ -1,229 +1,902 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Backtracking Roleplay</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Backtracking | DSA Roleplay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
 <style>
-body{
-margin:0;
-font-family: 'Segoe UI', sans-serif;
-background: linear-gradient(135deg,#0f172a,#1e293b);
-color:white;
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0a0a0f;--s1:#14141f;--s2:#1e1e2e;
+--txt:#e4e4e7;--dim:#71717a;
+--nar:#a855f7;--cm:#3b82f6;--ck:#22c55e;--mem:#f59e0b;--bk:#ef4444;
 }
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+::selection{background:rgba(168,85,247,.3)}
 
-h1{
-text-align:center;
-margin-top:20px;
-}
+/* ── HERO ── */
+.hero{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1.5rem;position:relative;overflow:hidden}
+.hero::before,.hero::after{content:'';position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.hero::before{width:280px;height:280px;background:rgba(168,85,247,.25);top:10%;left:-60px;animation:drift 7s ease-in-out infinite}
+.hero::after{width:220px;height:220px;background:rgba(59,130,246,.2);bottom:15%;right:-50px;animation:drift 9s ease-in-out infinite reverse}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}}
+.hero-badge{background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.28);padding:.45rem 1.1rem;border-radius:50px;font-size:.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--nar);margin-bottom:1.5rem;z-index:1;animation:fadeDown .8s ease both}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+.hero h1{font-size:2.8rem;font-weight:900;letter-spacing:-1px;line-height:1.08;z-index:1;background:linear-gradient(135deg,#a855f7,#3b82f6,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .9s .2s ease both}
+.hero p{margin-top:1rem;color:var(--dim);font-size:.95rem;line-height:1.7;z-index:1;max-width:320px;animation:fadeUp .9s .4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.scroll-hint{position:absolute;bottom:1.6rem;display:flex;flex-direction:column;align-items:center;gap:.4rem;z-index:1;animation:bounce 2.2s infinite}
+.scroll-hint span{font-size:.65rem;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
+.scroll-arrow{width:18px;height:18px;border-right:2px solid var(--dim);border-bottom:2px solid var(--dim);transform:rotate(45deg)}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 
-.container{
-max-width:1000px;
-margin:auto;
-padding:20px;
-}
+/* ── SECTION TITLES ── */
+.sec-title{font-size:1.4rem;font-weight:800;padding:2.5rem 1.5rem 1rem}
+.sec-title span{background:linear-gradient(135deg,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
-.roles{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:10px;
-margin-bottom:20px;
-}
+/* ── TEAM ── */
+.team-scroll{display:flex;gap:1rem;padding:1rem 1.5rem 2rem;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.team-scroll::-webkit-scrollbar{display:none}
+.tc{min-width:250px;background:rgba(30,30,46,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:1.4rem;scroll-snap-align:center;transition:transform .25s}
+.tc:active{transform:scale(.97)}
+.av{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:#fff;margin-bottom:.9rem}
+.tc .nm{font-weight:700;font-size:1.05rem;margin-bottom:.3rem}
+.rb{display:inline-block;padding:.2rem .7rem;border-radius:50px;font-size:.65rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:.7rem}
+.tc .ds{color:var(--dim);font-size:.8rem;line-height:1.55}
+.c-nar .av{background:linear-gradient(135deg,#a855f7,#7c3aed)}.c-nar .rb{background:rgba(168,85,247,.13);color:var(--nar);border:1px solid rgba(168,85,247,.25)}
+.c-cm .av{background:linear-gradient(135deg,#3b82f6,#2563eb)}.c-cm .rb{background:rgba(59,130,246,.13);color:var(--cm);border:1px solid rgba(59,130,246,.25)}
+.c-ck .av{background:linear-gradient(135deg,#22c55e,#16a34a)}.c-ck .rb{background:rgba(34,197,94,.13);color:var(--ck);border:1px solid rgba(34,197,94,.25)}
+.c-mem .av{background:linear-gradient(135deg,#f59e0b,#d97706)}.c-mem .rb{background:rgba(245,158,11,.13);color:var(--mem);border:1px solid rgba(245,158,11,.25)}
+.c-bk .av{background:linear-gradient(135deg,#ef4444,#dc2626)}.c-bk .rb{background:rgba(239,68,68,.13);color:var(--bk);border:1px solid rgba(239,68,68,.25)}
 
-.role{
-padding:10px 15px;
-border-radius:20px;
-cursor:pointer;
-font-weight:bold;
-transition:0.3s;
-}
+/* ── TABS ── */
+.tabs{display:flex;gap:.5rem;padding:.9rem 1.5rem;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:100;background:rgba(10,10,15,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.05)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:.55rem 1.1rem;border-radius:12px;font-size:.78rem;font-weight:600;white-space:nowrap;border:1px solid rgba(255,255,255,.09);background:var(--s1);color:var(--dim);cursor:pointer;transition:all .25s;-webkit-appearance:none;appearance:none}
+.tab.active{background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border-color:transparent;box-shadow:0 2px 16px rgba(168,85,247,.35)}
 
-.role:hover{
-transform:scale(1.1);
-}
+/* ── SCENES ── */
+.scene{display:none;padding:1rem 1rem 5rem}
+.scene.active{display:block;animation:sceneIn .35s ease}
+@keyframes sceneIn{from{opacity:0}to{opacity:1}}
+.sh{text-align:center;padding:1.5rem 1rem 1rem}.sh h2{font-size:1.25rem;font-weight:800;margin-bottom:.35rem}.sh p{color:var(--dim);font-size:.82rem}
 
-.anurag{background:#38bdf8;color:black;}
-.sanskruti{background:#a78bfa;}
-.swathya{background:#f87171;}
-.sreshta{background:#34d399;color:black;}
-.alok{background:#fbbf24;color:black;}
-.all{background:white;color:black;}
+/* ── CHAT BUBBLES ── */
+.cb{display:flex;gap:.7rem;margin-bottom:.85rem;opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.cb.vis{opacity:1;transform:translateY(0)}
+.ca{width:34px;height:34px;min-width:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.65rem;color:#fff;margin-top:2px}
+.cc{flex:1;min-width:0}
+.cn{font-size:.72rem;font-weight:700;margin-bottom:.2rem;display:flex;align-items:center;gap:.45rem}
+.cr{font-size:.58rem;padding:.12rem .5rem;border-radius:50px;font-weight:700;letter-spacing:.4px}
+.ct{background:var(--s2);padding:.75rem .95rem;border-radius:4px 14px 14px 14px;font-size:.88rem;line-height:1.65;border-left:3px solid transparent;word-wrap:break-word}
+.ct em{color:var(--dim);font-size:.78rem}
 
-.controls{
-text-align:center;
-margin-bottom:20px;
-}
+.ch-nar .ca{background:linear-gradient(135deg,#a855f7,#7c3aed)}.ch-nar .cn{color:var(--nar)}.ch-nar .cr{background:rgba(168,85,247,.13);color:var(--nar)}.ch-nar .ct{border-left-color:var(--nar)}
+.ch-cm .ca{background:linear-gradient(135deg,#3b82f6,#2563eb)}.ch-cm .cn{color:var(--cm)}.ch-cm .cr{background:rgba(59,130,246,.13);color:var(--cm)}.ch-cm .ct{border-left-color:var(--cm)}
+.ch-ck .ca{background:linear-gradient(135deg,#22c55e,#16a34a)}.ch-ck .cn{color:var(--ck)}.ch-ck .cr{background:rgba(34,197,94,.13);color:var(--ck)}.ch-ck .ct{border-left-color:var(--ck)}
+.ch-mem .ca{background:linear-gradient(135deg,#f59e0b,#d97706)}.ch-mem .cn{color:var(--mem)}.ch-mem .cr{background:rgba(245,158,11,.13);color:var(--mem)}.ch-mem .ct{border-left-color:var(--mem)}
+.ch-bk .ca{background:linear-gradient(135deg,#ef4444,#dc2626)}.ch-bk .cn{color:var(--bk)}.ch-bk .cr{background:rgba(239,68,68,.13);color:var(--bk)}.ch-bk .ct{border-left-color:var(--bk)}
 
-button{
-padding:10px 20px;
-margin:5px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-background:#38bdf8;
-color:black;
-}
+/* ── SPECIAL ── */
+.shout{display:block;font-weight:900;font-size:1.15rem;background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1.5px;margin-top:.3rem}
+.stage{text-align:center;padding:.9rem;margin:.8rem 0;color:var(--dim);font-style:italic;font-size:.78rem;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.stage.vis{opacity:1;transform:translateY(0)}
+.divider{display:flex;align-items:center;gap:.8rem;margin:1.5rem 0;color:var(--dim);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.divider.vis{opacity:1;transform:translateY(0)}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent)}
+.success{background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(59,130,246,.1));border:1px solid rgba(34,197,94,.25);border-radius:16px;padding:1.2rem;text-align:center;margin:1.2rem 0;opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.success.vis{opacity:1;transform:translateY(0)}
+.success .emoji{font-size:1.6rem;display:block;margin-bottom:.4rem}
+.success .stxt{color:#22c55e;font-weight:700;font-size:1rem}
 
-.script{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
+/* ── MINI BOARD ── */
+.board-wrap{text-align:center;margin:1.2rem 0;opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.board-wrap.vis{opacity:1;transform:translateY(0)}
+.board-wrap p{font-size:.75rem;color:var(--dim);margin-bottom:.6rem}
+.board{display:inline-grid;grid-template-columns:repeat(5,38px);gap:2px;border-radius:10px;overflow:hidden;border:2px solid rgba(255,255,255,.08)}
+.bc{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.bl{background:rgba(255,255,255,.07)}.bd{background:rgba(255,255,255,.03)}
+.queen{color:#f59e0b;filter:drop-shadow(0 0 4px rgba(245,158,11,.5))}
 
-.card{
-padding:15px;
-border-radius:15px;
-backdrop-filter: blur(10px);
-background: rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.1);
-animation:fade 0.3s ease;
-}
+/* ── FAB ── */
+.fab{position:fixed;bottom:1.8rem;right:1.2rem;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#a855f7,#3b82f6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;font-weight:700;box-shadow:0 4px 20px rgba(168,85,247,.4);cursor:pointer;z-index:90;opacity:0;transform:scale(.7);transition:all .3s;border:none}
+.fab.show{opacity:1;transform:scale(1)}
 
-@keyframes fade{
-from{opacity:0;transform:translateY(10px);}
-to{opacity:1;transform:translateY(0);}
-}
+/* ── FOOTER ── */
+.footer{text-align:center;padding:2rem 1.5rem 5rem;color:var(--dim);font-size:.75rem;line-height:1.7;border-top:1px solid rgba(255,255,255,.05)}
+.footer strong{color:var(--txt);font-weight:700}
 
-.name{
-font-weight:bold;
-margin-bottom:5px;
-}
-
-.anuragText{color:#38bdf8;}
-.sanskrutiText{color:#a78bfa;}
-.swathyaText{color:#f87171;}
-.sreshtaText{color:#34d399;}
-.alokText{color:#fbbf24;}
-
+@media(min-width:480px){.hero h1{font-size:3.4rem}.tc{min-width:270px}.board .bc{width:44px;height:44px}}
 </style>
 </head>
-
 <body>
 
-<h1>🎭 Backtracking Roleplay</h1>
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+<div class="hero-badge">Data Structures & Algorithms</div>
+<h1>Backtracking</h1>
+<p>A roleplay-based exploration of one of the most powerful problem-solving techniques in computer science.</p>
+<div class="scroll-hint"><span>Scroll</span><div class="scroll-arrow"></div></div>
+</section>
 
-<div class="container">
+<!-- ═══════ TEAM ═══════ -->
+<h2 class="sec-title">Meet the <span>Team</span></h2>
+<div class="team-scroll">
 
-<div class="roles">
-<div class="role all" onclick="setRole('all')">Full Script</div>
-<div class="role anurag" onclick="setRole('Anurag')">Anurag</div>
-<div class="role sanskruti" onclick="setRole('Sanskruti')">Sanskruti</div>
-<div class="role swathya" onclick="setRole('Swathya')">Swathya</div>
-<div class="role sreshta" onclick="setRole('Sreshta')">Sreshta</div>
-<div class="role alok" onclick="setRole('Alok')">Alok</div>
+<div class="tc c-nar">
+<div class="av">AS</div>
+<div class="nm">Anurag Soni</div>
+<div class="rb">Narrator</div>
+<div class="ds">Guides the audience through the entire backtracking process step by step.</div>
 </div>
 
-<div class="controls">
-<button onclick="render()">Show Script</button>
+<div class="tc c-cm">
+<div class="av">SA</div>
+<div class="nm">Sanskruti</div>
+<div class="rb">Choice Maker</div>
+<div class="ds">Makes decisions at each step — picks the next option to explore.</div>
 </div>
 
-<div id="script" class="script"></div>
+<div class="tc c-ck">
+<div class="av">SW</div>
+<div class="nm">Swathya</div>
+<div class="rb">Constraint Checker</div>
+<div class="ds">Validates every choice — checks if it violates any constraint.</div>
+</div>
+
+<div class="tc c-mem">
+<div class="av">SR</div>
+<div class="nm">Sreshta</div>
+<div class="rb">Memory</div>
+<div class="ds">Stores the current state of the solution and reverts when needed.</div>
+</div>
+
+<div class="tc c-bk">
+<div class="av">AL</div>
+<div class="nm">Alok</div>
+<div class="rb">Backtracker</div>
+<div class="ds">Undoes wrong decisions and triggers exploration of new paths.</div>
+</div>
 
 </div>
+
+<!-- ═══════ TABS ═══════ -->
+<nav class="tabs">
+<button class="tab active" data-s="s1">🎬 Introduction</button>
+<button class="tab" data-s="s2">♛ N-Queens</button>
+<button class="tab" data-s="s3">🧮 Subset Sum</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     SCENE 1 — INTRODUCTION
+     ═══════════════════════════════════════════════ -->
+<section id="s1" class="scene active">
+<div class="sh"><h2>🎬 Scene 1</h2><p>Opening &amp; Introduction</p></div>
+
+<div class="stage">All 5 members stand in a slight semicircle. Narrator in center front.</div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">Good morning everyone! We are here to present an important problem-solving technique in Data Structures and Algorithms… <span class="shout">BACKTRACKING</span></div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">Before we begin, let us introduce ourselves as a system working together.</div>
+</div></div>
+
+<div class="divider">Introductions</div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">I am <strong>Anurag Soni</strong>. I will be the <strong>Narrator</strong>.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I am the <strong>Choice Maker</strong>. I choose the next step.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">I am the <strong>Constraint Checker</strong>. I verify if the step is valid.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">I am the <strong>Memory</strong>. I store the current state of the solution.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct">I am the <strong>Backtracker</strong>… I undo wrong decisions and go for other option.</div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">And together… we simulate how <strong>backtracking</strong> works.</div>
+</div></div>
+
+<div class="divider">Live Demo</div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I try a choice.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">I store the choice.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">For valid choice I say <strong>continue</strong>.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct">If the choice is correct, we move forward, otherwise we <strong>Backtrack</strong>.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I try another choice.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">❌ <strong>Invalid!</strong> Constraint violated.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACKKKKK!</span></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Undoing last step.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct">When a solution path fails… we go back… and try another possibility.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I try a different option.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">✅ <strong>Valid.</strong></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Added to memory.</div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">This process continues… until we find a <strong>correct solution</strong>.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct">Backtracking systematically explores all possible solutions, but eliminates invalid paths early… to <strong>save time and effort</strong>.</div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">To understand this better… let us solve a classic problem… <br><strong style="font-size:1.05rem">The N-Queens Problem.</strong></div>
+</div></div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCENE 2 — N-QUEENS
+     ═══════════════════════════════════════════════ -->
+<section id="s2" class="scene">
+<div class="sh"><h2>♛ Scene 2</h2><p>The N-Queens Problem (5×5)</p></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">The N-Queens problem is a classic problem in backtracking. It asks us to place <strong>N queens</strong> on an <strong>N × N chessboard</strong>… such that no two queens attack each other.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">A queen can attack in three ways:<br>• Same <strong>row</strong><br>• Same <strong>column</strong><br>• Same <strong>diagonal</strong><br><em>(demonstrates with hand gestures)</em></div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Our goal is to place one queen in each row… while ensuring that none of them attack each other.</div>
+</div></div>
+
+<div class="divider">Row 1</div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">We begin with the first row. Since the board is empty, we can place the queen in any column.<br>I place the queen at <strong>Row 1, Column 1</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">📌 Placing Queen at <strong>(1,1)</strong>.<br>Current state: 1 queen placed.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">✅ This position is <strong>safe</strong> because there are no other queens on the board yet. No conflicts.</div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">At the start, every position is safe… because no constraints are violated.</div>
+</div></div>
+
+<div class="divider">Row 2</div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Now we move to the second row. We must place the queen such that it does not attack the first queen.<br>I try placing the queen at <strong>Row 2, Column 1</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">❌ This creates a <strong>conflict</strong> — both queens are in the <strong>same column</strong>. NOT safe.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span> Go back and choose the next possible option.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">This position is rejected. Trying next possibility.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I now try <strong>Row 2, Column 2</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">❌ This position is <strong>diagonally aligned</strong> with the queen at (1,1). They can attack each other.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Rejected again.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I try <strong>Row 2, Column 3</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">✅ Not in the same row or column… and not on the same diagonal. This position is <strong>SAFE</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">📌 Recording position: <strong>(2,3)</strong>.<br>Total queens placed: 2.</div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">This is how backtracking proceeds… trying different possibilities until a valid one is found.</div>
+</div></div>
+
+<div class="divider">Row 3</div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Now we move to Row 3. I try placing at <strong>Column 1</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">❌ Conflict! Same column as first queen.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I try <strong>Column 2</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">❌ This lies on a diagonal with the queen at (2,3). Unsafe.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I try <strong>Column 5</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">✅ This position is not attacked by any existing queen.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">📌 Stored: <strong>(3,5)</strong>. Total queens = 3.</div>
+</div></div>
+
+<div class="divider">Row 4</div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Now placing queen in Row 4. I try <strong>Column 2</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">✅ No same column conflict… No diagonal conflict… This position is <strong>SAFE</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">📌 Stored: <strong>(4,2)</strong>. Total queens = 4.</div>
+</div></div>
+
+<div class="divider">Row 5 — Final Queen</div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Finally, Row 5. I try <strong>Column 4</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">❌ This creates a diagonal conflict…</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Removing last attempt.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I now try <strong>Column 3</strong>.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">✅ No column conflict… No diagonal conflict… This position is <strong>SAFE</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">🎉 All <strong>5 queens</strong> successfully placed! <strong>Solution found.</strong></div>
+</div></div>
+
+<div class="success">
+<span class="emoji">♛♛♛♛♛</span>
+<span class="stxt">N-Queens Solution Found!</span>
+</div>
+
+<div class="board-wrap">
+<p>Final Board — Queens at (1,1) (2,3) (3,5) (4,2) (5,3)</p>
+<div class="board">
+<div class="bc bl"><span class="queen">♛</span></div><div class="bc bd"></div><div class="bc bl"></div><div class="bc bd"></div><div class="bc bl"></div>
+<div class="bc bd"></div><div class="bc bl"></div><div class="bc bd"><span class="queen">♛</span></div><div class="bc bl"></div><div class="bc bd"></div>
+<div class="bc bl"></div><div class="bc bd"></div><div class="bc bl"></div><div class="bc bd"></div><div class="bc bl"><span class="queen">♛</span></div>
+<div class="bc bd"></div><div class="bc bl"><span class="queen">♛</span></div><div class="bc bd"></div><div class="bc bl"></div><div class="bc bd"></div>
+<div class="bc bl"></div><div class="bc bd"></div><div class="bc bl"><span class="queen">♛</span></div><div class="bc bd"></div><div class="bc bl"></div>
+</div>
+</div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct">In this process, we placed queens one row at a time. When a position violated constraints… we did not continue further along that path… instead, we went back… and tried a <strong>different possibility</strong>.</div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">Backtracking ensures that we explore all valid possibilities… while avoiding unnecessary computation.<br><br>Now that we understand this concept… let us apply the same idea to another problem — <strong>Subset Sum</strong>.</div>
+</div></div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCENE 3 — SUBSET SUM
+     ═══════════════════════════════════════════════ -->
+<section id="s3" class="scene">
+<div class="sh"><h2>🧮 Scene 3</h2><p>The Subset Sum Problem</p></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">Now let us understand another important problem solved using backtracking… <strong>The Subset Sum Problem</strong>.<br><br>We are given a set of numbers: <strong>{3, 4, 5, 2}</strong><br>And a target value: <strong>7</strong><br><br>Our goal is to find a subset whose sum equals the target.<br><br>At each step, we have two choices:<br>• <strong>Include</strong> the element<br>• <strong>Exclude</strong> the element</div>
+</div></div>
+
+<div class="divider">Path 1 — Quick Win</div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">We begin with the first element… <strong>3</strong>.<br>I choose to <strong>INCLUDE 3</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{3}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = 3. This is less than the target… so we <strong>continue</strong>.</div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">Since the sum has not reached the target… we explore further.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Next element is <strong>4</strong>. I choose to <strong>INCLUDE 4</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{3, 4}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = <strong>7</strong>. This matches the target! ✅ <strong>Solution found!</strong></div>
+</div></div>
+
+<div class="success">
+<span class="emoji">🎯</span>
+<span class="stxt">Solution Found! {3, 4} = 7</span>
+</div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">In this case, we found a valid subset quickly… But backtracking also helps us explore other possibilities when a path <strong>fails</strong>.</div>
+</div></div>
+
+<div class="divider">Path 2 — Include 3 &amp; 5</div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Let us try a different path. I <strong>INCLUDE 3</strong>… and now <strong>INCLUDE 5</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{3, 5}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = <strong>8</strong>. ❌ This <strong>exceeds</strong> the target.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Removing 5. Reverting to <strong>{3}</strong>.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Now instead of including 5… I <strong>EXCLUDE</strong> it. I move to the next element… <strong>2</strong>. I <strong>INCLUDE 2</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{3, 2}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = <strong>5</strong>. Still less than the target… so we continue searching.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">We have reached the end of the set… There are no more elements to include.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">The sum is 5, which is less than the target 7… so this path does <strong>not</strong> give a solution.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Removing last element… reverting from {3,2} to <strong>{3}</strong>.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">We have already explored including 2 after 3… So now what to do?</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Removing 3. Subset becomes empty <strong>{ }</strong>.</div>
+</div></div>
+
+<div class="divider">Path 3 — Exclude 3, Try 4</div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Now we try a completely different path… I <strong>EXCLUDE 3</strong>. I move to the next element… <strong>4</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{ }</strong></div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I <strong>INCLUDE 4</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{4}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = 4… still less than target.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Next element is <strong>5</strong>. I <strong>INCLUDE 5</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{4, 5}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = <strong>9</strong>… ❌ exceeds the target.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Removing 5. Back to <strong>{4}</strong>.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I <strong>EXCLUDE 5</strong>… and move to next element… <strong>2</strong>. I <strong>INCLUDE 2</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{4, 2}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = <strong>6</strong>… still less than target.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">No more elements left.</div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Sum is 6… not equal to 7… so this path <strong>fails</strong>.</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Removing 2… reverting to <strong>{4}</strong>.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">No more options after 4…</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct"><span class="shout">BACKTRACK!</span></div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Removing 4… subset becomes empty <strong>{ }</strong>.</div>
+</div></div>
+
+<div class="divider">Path 4 — Exclude 3 &amp; 4, Try 5</div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct">Now we explore another path…</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">I <strong>EXCLUDE 3 and 4</strong>. I move to element <strong>5</strong>… and <strong>INCLUDE</strong> it.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{5}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = 5… less than target.</div>
+</div></div>
+
+<div class="cb ch-cm"><div class="ca">SA</div><div class="cc">
+<div class="cn">Sanskruti <span class="cr">Choice Maker</span></div>
+<div class="ct">Next element… <strong>2</strong>. I <strong>INCLUDE 2</strong>.</div>
+</div></div>
+
+<div class="cb ch-mem"><div class="ca">SR</div><div class="cc">
+<div class="cn">Sreshta <span class="cr">Memory</span></div>
+<div class="ct">Subset = <strong>{5, 2}</strong></div>
+</div></div>
+
+<div class="cb ch-ck"><div class="ca">SW</div><div class="cc">
+<div class="cn">Swathya <span class="cr">Constraint Checker</span></div>
+<div class="ct">Current sum = <strong>7</strong>… ✅ This <strong>matches the target</strong>!</div>
+</div></div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct">🎉 <strong>Solution found!</strong></div>
+</div></div>
+
+<div class="success">
+<span class="emoji">🎯</span>
+<span class="stxt">Solution Found! {5, 2} = 7</span>
+</div>
+
+<div class="divider">Closing</div>
+
+<div class="cb ch-bk"><div class="ca">AL</div><div class="cc">
+<div class="cn">Alok <span class="cr">Backtracker</span></div>
+<div class="ct">In this process, we explored multiple subsets… We included elements… excluded elements… And whenever a path failed… we <strong>backtracked</strong> and tried another possibility.<br><br>Backtracking ensures that all possible solutions are explored… while avoiding unnecessary computation by <strong>stopping invalid paths early</strong>.</div>
+</div></div>
+
+<div class="cb ch-nar"><div class="ca">AS</div><div class="cc">
+<div class="cn">Anurag Soni <span class="cr">Narrator</span></div>
+<div class="ct">Thus, both the <strong>N-Queens problem</strong> and the <strong>Subset Sum problem</strong>… demonstrate the true power of <strong>Backtracking</strong>.</div>
+</div></div>
+
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<div class="footer">
+<strong>Backtracking — DSA Roleplay</strong><br>
+Presented by Anurag Soni, Sanskruti, Swathya, Sreshta &amp; Alok
+</div>
+
+<!-- ═══════ FAB ═══════ -->
+<button class="fab" aria-label="Scroll to top">↑</button>
 
 <script>
+// ── TABS ──
+const tabs=document.querySelectorAll('.tab');
+const scenes=document.querySelectorAll('.scene');
 
-let currentRole = "all";
+tabs.forEach(t=>{
+  t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    scenes.forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const sc=document.getElementById(t.dataset.s);
+    sc.classList.add('active');
 
-function setRole(role){
-currentRole = role;
-render();
-}
+    // reset & re-observe items in new scene
+    sc.querySelectorAll('.cb,.stage,.divider,.success,.board-wrap').forEach(el=>{
+      el.classList.remove('vis');
+      observer.observe(el);
+    });
 
-const script = [
-{n:"Anurag",c:"anuragText",t:"(confident) Good morning everyone. Today we present Backtracking."},
-{n:"Anurag",c:"anuragText",t:"(calm) It builds solutions step by step and reverses wrong paths."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"(thinking) I try a choice."},
-{n:"Sreshta",c:"sreshtaText",t:"(noting) Storing the choice."},
-{n:"Swathya",c:"swathyaText",t:"(checking) Valid. Continue."},
-{n:"Alok",c:"alokText",t:"(firm) If wrong... BACKTRACK!"},
-
-{n:"Anurag",c:"anuragText",t:"Now solving N-Queens problem."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Place Queen at (1,1)."},
-{n:"Sreshta",c:"sreshtaText",t:"Stored (1,1)."},
-{n:"Swathya",c:"swathyaText",t:"Safe."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Try (2,1)."},
-{n:"Swathya",c:"swathyaText",t:"Conflict."},
-{n:"Alok",c:"alokText",t:"BACKTRACK!"},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Try (2,3)."},
-{n:"Swathya",c:"swathyaText",t:"Safe."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Try (3,2)."},
-{n:"Swathya",c:"swathyaText",t:"Diagonal conflict."},
-{n:"Alok",c:"alokText",t:"BACKTRACK!"},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Try (3,5)."},
-{n:"Swathya",c:"swathyaText",t:"Safe."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Try (4,2)."},
-{n:"Swathya",c:"swathyaText",t:"Safe."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Try (5,4)."},
-{n:"Swathya",c:"swathyaText",t:"Conflict."},
-{n:"Alok",c:"alokText",t:"BACKTRACK!"},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Try (5,3)."},
-{n:"Swathya",c:"swathyaText",t:"Safe. Solution complete."},
-
-{n:"Anurag",c:"anuragText",t:"Now solving Subset Sum."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Include 3."},
-{n:"Sreshta",c:"sreshtaText",t:"{3}"},
-{n:"Swathya",c:"swathyaText",t:"Sum 3."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Include 4."},
-{n:"Swathya",c:"swathyaText",t:"Sum 7. Success."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Try new path include 5."},
-{n:"Swathya",c:"swathyaText",t:"Sum 8. Fail."},
-{n:"Alok",c:"alokText",t:"BACKTRACK!"},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Include 2."},
-{n:"Swathya",c:"swathyaText",t:"Sum 5."},
-
-{n:"Swathya",c:"swathyaText",t:"No more elements. Fail."},
-{n:"Alok",c:"alokText",t:"BACKTRACK!"},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Exclude 3, include 4."},
-{n:"Swathya",c:"swathyaText",t:"Sum 4."},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Include 5."},
-{n:"Swathya",c:"swathyaText",t:"Sum 9. Fail."},
-{n:"Alok",c:"alokText",t:"BACKTRACK!"},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Include 2."},
-{n:"Swathya",c:"swathyaText",t:"Sum 6. Fail."},
-{n:"Alok",c:"alokText",t:"BACKTRACK!"},
-
-{n:"Sanskruti",c:"sanskrutiText",t:"Include 5 then 2."},
-{n:"Swathya",c:"swathyaText",t:"Sum 7. Success."},
-
-{n:"Anurag",c:"anuragText",t:"(final) Try → Check → Fail → Backtrack → Try again."}
-];
-
-function render(){
-let container=document.getElementById("script");
-container.innerHTML="";
-
-script.forEach(line=>{
-if(currentRole==="all" || currentRole===line.n){
-let div=document.createElement("div");
-div.className="card";
-div.innerHTML=`<div class="name ${line.c}">${line.n}</div>${line.t}`;
-container.appendChild(div);
-}
+    document.querySelector('.tabs').scrollIntoView({behavior:'smooth',block:'start'});
+  });
 });
-}
 
-render();
+// ── SCROLL ANIMATION ──
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      // stagger delay for items entering at the same time
+      setTimeout(()=>e.target.classList.add('vis'), 60);
+      observer.unobserve(e.target);
+    }
+  });
+},{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
 
+// observe initial scene
+document.querySelectorAll('#s1 .cb, #s1 .stage, #s1 .divider, #s1 .success, #s1 .board-wrap').forEach(el=>observer.observe(el));
+
+// ── FAB ──
+const fab=document.querySelector('.fab');
+let ticking=false;
+window.addEventListener('scroll',()=>{
+  if(!ticking){
+    window.requestAnimationFrame(()=>{
+      fab.classList.toggle('show',window.scrollY>600);
+      ticking=false;
+    });
+    ticking=true;
+  }
+});
+fab.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+// ── TEAM CARD GLOW ON TOUCH ──
+document.querySelectorAll('.tc').forEach(card=>{
+  card.addEventListener('touchstart',()=>card.style.boxShadow='0 0 30px rgba(168,85,247,.15)');
+  card.addEventListener('touchend',()=>setTimeout(()=>card.style.boxShadow='none',300));
+});
 </script>
-
 </body>
 </html>
