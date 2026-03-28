@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Backtracking Roleplay</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+margin:0;
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+}
+
+h1{
+text-align:center;
+margin-top:20px;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:20px;
+}
+
+.roles{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:10px;
+margin-bottom:20px;
+}
+
+.role{
+padding:10px 15px;
+border-radius:20px;
+cursor:pointer;
+font-weight:bold;
+transition:0.3s;
+}
+
+.role:hover{
+transform:scale(1.1);
+}
+
+.anurag{background:#38bdf8;color:black;}
+.sanskruti{background:#a78bfa;}
+.swathya{background:#f87171;}
+.sreshta{background:#34d399;color:black;}
+.alok{background:#fbbf24;color:black;}
+.all{background:white;color:black;}
+
+.controls{
+text-align:center;
+margin-bottom:20px;
+}
+
+button{
+padding:10px 20px;
+margin:5px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+background:#38bdf8;
+color:black;
+}
+
+.script{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.card{
+padding:15px;
+border-radius:15px;
+backdrop-filter: blur(10px);
+background: rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.1);
+animation:fade 0.3s ease;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.name{
+font-weight:bold;
+margin-bottom:5px;
+}
+
+.anuragText{color:#38bdf8;}
+.sanskrutiText{color:#a78bfa;}
+.swathyaText{color:#f87171;}
+.sreshtaText{color:#34d399;}
+.alokText{color:#fbbf24;}
+
+</style>
+</head>
+
+<body>
+
+<h1>🎭 Backtracking Roleplay</h1>
+
+<div class="container">
+
+<div class="roles">
+<div class="role all" onclick="setRole('all')">Full Script</div>
+<div class="role anurag" onclick="setRole('Anurag')">Anurag</div>
+<div class="role sanskruti" onclick="setRole('Sanskruti')">Sanskruti</div>
+<div class="role swathya" onclick="setRole('Swathya')">Swathya</div>
+<div class="role sreshta" onclick="setRole('Sreshta')">Sreshta</div>
+<div class="role alok" onclick="setRole('Alok')">Alok</div>
+</div>
+
+<div class="controls">
+<button onclick="render()">Show Script</button>
+</div>
+
+<div id="script" class="script"></div>
+
+</div>
+
+<script>
+
+let currentRole = "all";
+
+function setRole(role){
+currentRole = role;
+render();
+}
+
+const script = [
+{n:"Anurag",c:"anuragText",t:"(confident) Good morning everyone. Today we present Backtracking."},
+{n:"Anurag",c:"anuragText",t:"(calm) It builds solutions step by step and reverses wrong paths."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"(thinking) I try a choice."},
+{n:"Sreshta",c:"sreshtaText",t:"(noting) Storing the choice."},
+{n:"Swathya",c:"swathyaText",t:"(checking) Valid. Continue."},
+{n:"Alok",c:"alokText",t:"(firm) If wrong... BACKTRACK!"},
+
+{n:"Anurag",c:"anuragText",t:"Now solving N-Queens problem."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Place Queen at (1,1)."},
+{n:"Sreshta",c:"sreshtaText",t:"Stored (1,1)."},
+{n:"Swathya",c:"swathyaText",t:"Safe."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Try (2,1)."},
+{n:"Swathya",c:"swathyaText",t:"Conflict."},
+{n:"Alok",c:"alokText",t:"BACKTRACK!"},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Try (2,3)."},
+{n:"Swathya",c:"swathyaText",t:"Safe."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Try (3,2)."},
+{n:"Swathya",c:"swathyaText",t:"Diagonal conflict."},
+{n:"Alok",c:"alokText",t:"BACKTRACK!"},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Try (3,5)."},
+{n:"Swathya",c:"swathyaText",t:"Safe."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Try (4,2)."},
+{n:"Swathya",c:"swathyaText",t:"Safe."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Try (5,4)."},
+{n:"Swathya",c:"swathyaText",t:"Conflict."},
+{n:"Alok",c:"alokText",t:"BACKTRACK!"},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Try (5,3)."},
+{n:"Swathya",c:"swathyaText",t:"Safe. Solution complete."},
+
+{n:"Anurag",c:"anuragText",t:"Now solving Subset Sum."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Include 3."},
+{n:"Sreshta",c:"sreshtaText",t:"{3}"},
+{n:"Swathya",c:"swathyaText",t:"Sum 3."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Include 4."},
+{n:"Swathya",c:"swathyaText",t:"Sum 7. Success."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Try new path include 5."},
+{n:"Swathya",c:"swathyaText",t:"Sum 8. Fail."},
+{n:"Alok",c:"alokText",t:"BACKTRACK!"},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Include 2."},
+{n:"Swathya",c:"swathyaText",t:"Sum 5."},
+
+{n:"Swathya",c:"swathyaText",t:"No more elements. Fail."},
+{n:"Alok",c:"alokText",t:"BACKTRACK!"},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Exclude 3, include 4."},
+{n:"Swathya",c:"swathyaText",t:"Sum 4."},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Include 5."},
+{n:"Swathya",c:"swathyaText",t:"Sum 9. Fail."},
+{n:"Alok",c:"alokText",t:"BACKTRACK!"},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Include 2."},
+{n:"Swathya",c:"swathyaText",t:"Sum 6. Fail."},
+{n:"Alok",c:"alokText",t:"BACKTRACK!"},
+
+{n:"Sanskruti",c:"sanskrutiText",t:"Include 5 then 2."},
+{n:"Swathya",c:"swathyaText",t:"Sum 7. Success."},
+
+{n:"Anurag",c:"anuragText",t:"(final) Try → Check → Fail → Backtrack → Try again."}
+];
+
+function render(){
+let container=document.getElementById("script");
+container.innerHTML="";
+
+script.forEach(line=>{
+if(currentRole==="all" || currentRole===line.n){
+let div=document.createElement("div");
+div.className="card";
+div.innerHTML=`<div class="name ${line.c}">${line.n}</div>${line.t}`;
+container.appendChild(div);
+}
+});
+}
+
+render();
+
+</script>
+
+</body>
+</html>
